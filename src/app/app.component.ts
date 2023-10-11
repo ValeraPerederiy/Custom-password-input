@@ -14,7 +14,5 @@ export class AppComponent {
     this.customForm = new FormGroup({
       'password': new FormControl('')
     })
-
-    this.customForm.controls['password'].valueChanges.subscribe(val=> console.log(val))
   }
 }
