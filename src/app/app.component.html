@@ -1,3 +1,9 @@
 <div class="wrapper">
-  <app-custom-password-input></app-custom-password-input>
+  <div class="formWrapper">
+    <div class="container">
+        <form [formGroup]="customForm">
+          <app-custom-password-input formControlName="password"></app-custom-password-input>
+        </form>
+    </div>
+  </div>
 </div>

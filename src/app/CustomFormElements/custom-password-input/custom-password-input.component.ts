@@ -1,15 +1,22 @@
-import { Component } from '@angular/core';
-import { FormControl, FormGroup, Validators } from '@angular/forms';
+import { Component, forwardRef, NgModule, OnInit } from '@angular/core';
+import { FormControl, Validators, ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
 import { passwordValidator } from '../Validators/password-validator';
 import { AbstractControl } from '@angular/forms';
 
 @Component({
   selector: 'app-custom-password-input',
   templateUrl: './custom-password-input.component.html',
-  styleUrls: ['./custom-password-input.component.scss']
+  styleUrls: ['./custom-password-input.component.scss'],
+  providers: [{
+    provide: NG_VALUE_ACCESSOR,
+    useExisting: forwardRef(() => CustomPasswordInputComponent),
+    multi:true
+  }]
 })
-export class CustomPasswordInputComponent {
-  public customForm: FormGroup;
+export class CustomPasswordInputComponent implements OnInit, ControlValueAccessor {
+  customPassInput = new FormControl('', [Validators.required, Validators.minLength(8), passwordValidator]);
+  onChange:any;
+  onTouch:any;
 
   public colorItem1:string = 'gray';
   public colorItem2:string = 'gray';
@@ -18,14 +25,24 @@ export class CustomPasswordInputComponent {
   public passVisibility:boolean = false;
 
   constructor() {
-    this.customForm = new FormGroup({
-      'password': new FormControl('', 
-      [
-        Validators.required,
-        Validators.minLength(8),
-        passwordValidator
-      ]),
+    
+  }
+  ngOnInit(){
+    this.customPassInput.valueChanges.subscribe(val => {
+      if(this.onChange) this.onChange(val)
     })
+  }
+
+  writeValue(value:string){
+    this.customPassInput.setValue(value);
+  }
+
+  registerOnChange(fn:any){
+    this.onChange = fn;
+  }
+
+  registerOnTouched(fn:any){
+    this.onTouch = fn;
   }
   
   changePassVisibility():void{
@@ -33,8 +50,8 @@ export class CustomPasswordInputComponent {
   }
 
   getColorsToProgressBar():void {
-    const formControl:AbstractControl = this.customForm.controls['password'];
-    console.log(formControl)
+    const formControl:AbstractControl = this.customPassInput;
+
     let strengthOfPass:number = 0;
     
     if(formControl.errors){
@@ -70,5 +87,7 @@ export class CustomPasswordInputComponent {
       this.colorItem3 = 'gray'
     }
   }
+
+  
 
 }
